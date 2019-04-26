@@ -387,6 +387,7 @@
 		cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellIdentifier];
 	}
 	cell.textLabel.text = self.possibleStringsFiltered[indexPath.row];
+    cell.textLabel.font = self.autoCompleteTextFont;
 	cell.textLabel.textColor = self.autoCompleteTableCellTextColor;
 	cell.backgroundColor = self.autoCompleteTableCellBackgroundColor;
 	return cell;
