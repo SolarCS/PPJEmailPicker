@@ -14,7 +14,7 @@
 
 @interface PPJUITextFieldPrivateDelegate : NSObject <UITextFieldDelegate> {
 @public
-	id<UITextFieldDelegate> _userDelegate;
+	__weak id<UITextFieldDelegate> _userDelegate;
 }
 @end
 
