@@ -608,7 +608,7 @@
 	NSString * newString = [textField.text stringByReplacingCharactersInRange:range withString:string];
 	if ([string isEqualToString:@" "] && !self.ignoreSpaceAsSeparator) {
 		NSString * add = textField.text;
-		if (add.length > 0) {
+		if ([add isValidEmail]) {
 			[self addString:add];
             [self layoutIfNeeded];
 			[self closeDropDown];
@@ -625,7 +625,7 @@
 - (BOOL)PPJ_textFieldShouldReturn:(UITextField *)txtField
 {
 	NSString * add = txtField.text;
-	if (add.length > 0) {
+	if ([add isValidEmail]) {
 		[self addString:add];
         [self layoutIfNeeded];
 		[self closeDropDown];
