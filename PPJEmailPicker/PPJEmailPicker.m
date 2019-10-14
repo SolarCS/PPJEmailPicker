@@ -244,22 +244,29 @@
 	[super layoutSubviews];
 	CGRect finalFrame = self.frame;
 	self.inset = UIEdgeInsetsZero;
-	for (int i = 1; i < self.selectedEmailUI.count; i++) {
-		CGRect frame = ((PPJSelectableLabel *)(self.selectedEmailUI[i-1])).frame;
-		PPJSelectableLabel * lbl  = self.selectedEmailUI[i];
-		if ((frame.origin.x + frame.size.width) + PPJEMAILPICKER_PADDING_X + lbl.frame.size.width > self.frame.size.width) {
-			lbl.frame = CGRectMake(0,
-									 frame.origin.y + frame.size.height + PPJEMAILPICKER_PADDING_Y,
-									 lbl.frame.size.width,
-									 lbl.frame.size.height);
-		}
-		else {
-			lbl.frame = CGRectMake(frame.origin.x + frame.size.width + PPJEMAILPICKER_PADDING_X,
-									 frame.origin.y,
-									 lbl.frame.size.width,
-									 lbl.frame.size.height);
-		}
-	}
+	for (int i = 0; i < self.selectedEmailUI.count; i++) {
+        PPJSelectableLabel * lbl  = self.selectedEmailUI[i];
+        [lbl sizeToFit];
+        if (i == 0) {
+            lbl.frame = CGRectMake(0,
+                                   0,
+                                   MIN(CGRectGetWidth(self.frame) - 3*PPJEMAILPICKER_PADDING_X, CGRectGetWidth(lbl.frame)),
+                                   lbl.frame.size.height);
+        } else {
+            CGRect frame = ((PPJSelectableLabel *)(self.selectedEmailUI[i-1])).frame;
+            if ((frame.origin.x + frame.size.width) + 4*PPJEMAILPICKER_PADDING_X + lbl.frame.size.width > self.frame.size.width) {
+                lbl.frame = CGRectMake(0,
+                                       frame.origin.y + frame.size.height + PPJEMAILPICKER_PADDING_Y,
+                                       MIN(CGRectGetWidth(self.frame) - 3*PPJEMAILPICKER_PADDING_X, CGRectGetWidth(lbl.frame)),
+                                       lbl.frame.size.height);
+            } else {
+                lbl.frame = CGRectMake(frame.origin.x + frame.size.width + PPJEMAILPICKER_PADDING_X,
+                                       frame.origin.y,
+                                       lbl.frame.size.width,
+                                       lbl.frame.size.height);
+            }
+        }
+    }
 	PPJSelectableLabel * lastElem = (self.selectedEmailUI).lastObject;
 	if (lastElem) {
 		self.inset = UIEdgeInsetsMake(lastElem.frame.origin.y,
