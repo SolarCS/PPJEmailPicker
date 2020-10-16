@@ -33,6 +33,7 @@
 @property (assign, nonatomic) BOOL                         showPlaceholderWhileEditing;
 @property (strong, readonly, nonatomic) NSString          *emailOnlyText;
 @property (assign, nonatomic) BOOL                         ignoreSpaceAsSeparator;
+@property (assign, nonatomic) BOOL                         adjustEmailPickerTableWidthToParentView;
 
 
 //

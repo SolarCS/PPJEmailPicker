@@ -495,7 +495,7 @@
 	if (CGRectGetWidth(self.emailPickerTableViewFrame) > 0){
 		frame = self.emailPickerTableViewFrame;
 	} else {
-		frame = textField.frame;
+        frame = self.adjustEmailPickerTableWidthToParentView ? textField.superview.bounds : textField.frame;
 		frame.origin.y += textField.frame.size.height;
 	}
 	
