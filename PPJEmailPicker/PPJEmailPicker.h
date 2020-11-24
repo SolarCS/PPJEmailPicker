@@ -13,7 +13,7 @@
 
 @interface PPJEmailPicker : UITextField <UITableViewDelegate, UITableViewDataSource>
 
-@property (assign, nonatomic) id<PPJEmailPickerDelegate>   pickerDelegate;
+@property (weak, nonatomic) id<PPJEmailPickerDelegate>     pickerDelegate;
 @property (strong, readonly ) UITableView                 *emailPickerTableView;
 @property (assign, nonatomic) BOOL                         emailPickerTableViewHidden;
 @property (assign, nonatomic) BOOL                         makeTextFieldDropShadowWithAutoCompleteTableOpen;

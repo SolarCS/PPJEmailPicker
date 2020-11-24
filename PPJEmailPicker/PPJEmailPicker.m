@@ -80,6 +80,7 @@
 @property (assign, nonatomic) CGFloat              originalShadowOpacity;
 @property (assign, nonatomic) CGFloat              minimumHeightTextField;
 @property (copy,   nonatomic) NSString            *tmpPlaceholder;
+@property (strong, nonatomic) NSTimer             *filterTimer;
 @end
 
 @implementation PPJEmailPicker {
@@ -94,6 +95,14 @@
 }
 
 #pragma mark - init override
+
+- (void)dealloc
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    [self.filterTimer invalidate];
+    self.filterTimer = nil;
+}
+
 - (instancetype)init
 {
 	self = [super init];
@@ -350,29 +359,33 @@
 		[self closeDropDown];
 		return;
 	}
-	filter = filter.lowercaseString;
-	NSMutableArray *m = [NSMutableArray array];
-	for (NSString * string in self.possibleStrings) {
-        BOOL exists = [self.selectedEmailList filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"SELF contains[c] %@", [string sanitizeString]]].count > 0;
-        if (([[string lowercaseString] rangeOfString:filter].location != NSNotFound) && (!exists))
-		{
-			[m addObject:string];
-		}
-	}
-	[m sortUsingComparator:^NSComparisonResult(id  _Nonnull obj1, id  _Nonnull obj2) {
-		return [((NSString*)obj1) compare:((NSString*)obj2)];
-	}];
-	NSInteger count = (m.count > self.numberOfAutocompleteRows)?self.numberOfAutocompleteRows : m.count;
-	self.possibleStringsFiltered = m;
-	if (count == 0) {
-		[self closeDropDown];
-		return;
-	}
-	[self showDropDown:count];
-	[self setNeedsLayout];
-	[self layoutIfNeeded];
-	[self.emailPickerTableView reloadData];
-	[self.emailPickerTableView flashScrollIndicators];
+	
+    NSString *textFilter = filter.lowercaseString;
+    __weak typeof(self) weakSelf = self;
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        NSMutableArray *m = [NSMutableArray array];
+        for (NSString * string in weakSelf.possibleStrings) {
+            BOOL exists = [weakSelf.selectedEmailList filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"SELF contains[c] %@", [string sanitizeString]]].count > 0;
+            if (([[string lowercaseString] rangeOfString:textFilter].location != NSNotFound) && (!exists))
+            {
+                [m addObject:string];
+            }
+        }
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            NSInteger count = (m.count > weakSelf.numberOfAutocompleteRows) ? weakSelf.numberOfAutocompleteRows : m.count;
+            weakSelf.possibleStringsFiltered = m;
+            if (count == 0) {
+                [weakSelf closeDropDown];
+                return;
+            }
+            [weakSelf showDropDown:count];
+            [weakSelf setNeedsLayout];
+            [weakSelf layoutIfNeeded];
+            [weakSelf.emailPickerTableView reloadData];
+            [weakSelf.emailPickerTableView flashScrollIndicators];
+        });
+    });
 }
 
 #pragma mark - TableView Data Source
@@ -616,7 +629,12 @@
 		}
 		return NO;
 	}
-	[self filterArray:newString];
+    
+    [self.filterTimer invalidate];
+    __weak typeof(self) weakSelf = self;
+    self.filterTimer = [NSTimer scheduledTimerWithTimeInterval:0.5 repeats:NO block:^(NSTimer * _Nonnull timer) {
+        [weakSelf filterArray:newString];
+    }];
 	
 	return YES;
 }
