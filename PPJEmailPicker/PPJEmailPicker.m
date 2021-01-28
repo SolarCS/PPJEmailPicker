@@ -298,7 +298,12 @@
     self.frame = finalFrame;
     self.emailPickerTableView.frame = [self emailPickerTableViewFrameForTextField:self];
     if (heightChanged && [self.pickerDelegate respondsToSelector:@selector(picker:changedHeight:)]) {
-        CGFloat height = CGRectGetHeight(finalFrame);
+        CGFloat height = 0;
+        if (self.emailPickerTableView.superview != nil) {
+            height = CGRectGetMaxY(self.emailPickerTableView.frame);
+        } else {
+            height = CGRectGetHeight(finalFrame);
+        }
         [self.pickerDelegate picker:self changedHeight:height];
     }
 }
