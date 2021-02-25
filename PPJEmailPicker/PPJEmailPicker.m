@@ -133,6 +133,7 @@
 -(void) commonInit
 {
 	[self initDelegate];
+    self.maxAllowedSelections                 = NSIntegerMax;
     self.autocorrectionType                   = UITextAutocorrectionTypeNo;
     self.keyboardType                         = UIKeyboardTypeEmailAddress;
     self.autocapitalizationType               = UITextAutocapitalizationTypeNone;
@@ -359,7 +360,7 @@
 
 -(void) filterArray:(NSString *)filter
 {
-	if (filter.length == 0) {
+	if (filter.length == 0 || self.selectedEmailList.count >= self.maxAllowedSelections) {
 		self.possibleStringsFiltered = [@[] mutableCopy];
 		[self closeDropDown];
 		return;
@@ -623,6 +624,10 @@
 
 - (BOOL)PPJ_TextField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string
 {
+    if (self.selectedEmailList.count >= self.maxAllowedSelections) {
+        return NO;
+    }
+    
 	NSString * newString = [textField.text stringByReplacingCharactersInRange:range withString:string];
 	if ([string isEqualToString:@" "] && !self.ignoreSpaceAsSeparator) {
 		NSString * add = textField.text;

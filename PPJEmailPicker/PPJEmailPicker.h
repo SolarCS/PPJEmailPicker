@@ -13,6 +13,7 @@
 
 @interface PPJEmailPicker : UITextField <UITableViewDelegate, UITableViewDataSource>
 
+@property (assign, nonatomic) NSInteger                    maxAllowedSelections;
 @property (weak, nonatomic) id<PPJEmailPickerDelegate>     pickerDelegate;
 @property (strong, readonly ) UITableView                 *emailPickerTableView;
 @property (assign, nonatomic) BOOL                         emailPickerTableViewHidden;
